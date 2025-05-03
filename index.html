@@ -10,7 +10,7 @@
       margin: 0;
       background-color: black;
       color: white;
-      font-family: 'Ubuntu Mono', Consolas, 'Courier New', monospace; /* Font monospaziato per uno stile tipo Linux */
+      font-family: 'Ubuntu Mono', Consolas, 'Courier New', monospace;
       overflow: hidden;
     }
 
@@ -33,12 +33,12 @@
 
     h1 {
       color: limegreen;
-      font-size: 2em; /* Ridotto per una migliore leggibilità */
+      font-size: 2em;
     }
 
     p {
       color: white;
-      font-size: 1em; /* Ridotto per una migliore leggibilità */
+      font-size: 1em;
     }
 
     nav {
@@ -53,24 +53,56 @@
       font-weight: bold;
     }
 
-    /* Sezione About Me nascosta di default */
-    .about-me {
+    /* Terminale */
+    .terminal {
       display: none;
-      text-align: center;
+      background-color: black;
+      color: #00ff00;
+      width: 80%;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 1.2em;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      white-space: pre-wrap;
+      font-family: 'Ubuntu Mono', monospace;
+      height: 300px;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    /* Barra superiore del terminale */
+    .terminal-header {
+      background-color: #333;
       color: white;
-      margin-top: 20px;
-      background-color: rgba(255, 0, 0, 0.2); /* Sfondo rosso trasparente */
-      padding: 20px; /* Padding per dare spazio tra il testo e il bordo */
-      border-radius: 10px; /* Bordi arrotondati */
-      width: 80%; /* Imposta una larghezza fissa */
-      max-width: 600px; /* Limita la larghezza massima */
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Aggiunge un'ombra leggera */
-      margin-left: auto;
-      margin-right: auto; /* Centra la sezione */
+      padding: 5px 10px;
+      text-align: left;
+      font-size: 1em;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Testo cmd.zkk a sinistra */
+    .terminal-header span {
+      font-size: 0.9em;
+      color: #00ff00;
+    }
+
+    /* Pulsante di chiusura (X) */
+    .terminal-header .close {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background-color: #ff5c5c;
+      cursor: pointer;
     }
 
     /* Animazione per la comparsa */
-    .about-me.show {
+    .terminal.show {
       animation: fadeIn 1s ease-in-out;
     }
 
@@ -101,39 +133,66 @@
     <p>Computer Engineer and Master's student in Cybersecurity.</p>
   </div>
 
-  <!-- Sezione About Me, nascosta per default -->
-  <div id="aboutMe" class="about-me">
-    <h2>About Me</h2>
-    <p>
-      Graduate in Computer Engineering, currently pursuing a Master’s degree in Cybersecurity. Passionate about technology and security, I have built strong skills in designing and developing computer systems during my bachelor's studies. My current education aims to further specialize in protecting digital assets and managing cyber risks. With hands-on experience and a proactive approach, I am ready to take on challenging opportunities in the world of cybersecurity. I am seeking roles where I can contribute to innovative projects and continue growing professionally.
-    </p>
+  <!-- Sezione terminale -->
+  <div id="terminal" class="terminal">
+    <div class="terminal-header">
+      <span>cmd.zkk</span>
+      <div class="close" id="closeTerminal"></div>
+    </div>
+    <p id="terminalContent"></p>
   </div>
 
   <script>
     const aboutLink = document.getElementById("aboutLink");
-    const aboutMeSection = document.getElementById("aboutMe");
     const homeLink = document.getElementById("homeLink");
+    const terminalSection = document.getElementById("terminal");
+    const terminalContent = document.getElementById("terminalContent");
+    const closeTerminalButton = document.getElementById("closeTerminal");
 
-    // Funzione per mostrare la sezione About Me
+    // Funzione per mostrare solo il terminale quando si clicca su About Me
     aboutLink.addEventListener("click", function(event) {
       event.preventDefault(); // Impedisce il comportamento predefinito del link (navigazione)
 
-      // Aggiungi la classe "show" per attivare l'animazione di comparsa
-      aboutMeSection.classList.add("show");
+      // Rimuove la sezione About Me
+      terminalSection.style.display = "block"; // Mostra il terminale
 
-      // Mostra la sezione About Me
-      aboutMeSection.style.display = "block";
+      // Inizializza il contenuto del terminale e lo scrive continuativamente
+      writeTerminalContent();
     });
 
-    // Funzione per nascondere la sezione About Me quando si clicca su "Home"
+    // Funzione per scrivere il contenuto in modo continuo
+    function writeTerminalContent() {
+      const content = [
+        "Loading About Me...",
+        "",
+        "Graduate in Computer Engineering, currently pursuing a Master’s degree in Cybersecurity. Passionate about technology and security, I have built strong skills in designing and developing computer systems during my bachelor's studies. My current education aims to further specialize in protecting digital assets and managing cyber risks. With hands-on experience and a proactive approach, I am ready to take on challenging opportunities in the world of cybersecurity. I am seeking roles where I can contribute to innovative projects and continue growing professionally."
+      ];
+
+      let index = 0;
+      let line = 0;
+
+      function typeLine() {
+        if (line < content.length) {
+          terminalContent.textContent += content[line] + "\n";
+          line++;
+          setTimeout(typeLine, 1000); // Aggiunge una nuova riga ogni 1 secondo
+        }
+      }
+
+      typeLine();
+    }
+
+    // Funzione per nascondere il terminale e non ripristinare la sezione About Me (che è stata eliminata)
     homeLink.addEventListener("click", function(event) {
       event.preventDefault(); // Impedisce il comportamento predefinito del link (navigazione)
 
-      // Rimuove la classe "show" e nasconde la sezione About Me
-      aboutMeSection.classList.remove("show");
+      // Rimuove il terminale e non ripristina nulla
+      terminalSection.style.display = "none"; // Nasconde il terminale
+    });
 
-      // Nasconde la sezione About Me
-      aboutMeSection.style.display = "none";
+    // Funzione per chiudere il terminale
+    closeTerminalButton.addEventListener("click", function() {
+      terminalSection.style.display = "none"; // Nasconde il terminale quando si clicca su "X"
     });
   </script>
 
