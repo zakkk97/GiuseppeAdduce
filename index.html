@@ -51,14 +51,45 @@
       text-decoration: none;
       font-weight: bold;
     }
+
+    /* Sezione About Me nascosta di default */
+    .about-me {
+      display: none;
+      text-align: center;
+      color: white;
+      margin-top: 20px;
+      background-color: rgba(255, 0, 0, 0.2); /* Sfondo blu scuro con trasparenza */
+      padding: 20px; /* Padding per dare spazio tra il testo e il bordo */
+      border-radius: 10px; /* Bordi arrotondati */
+      width: 80%; /* Imposta una larghezza fissa */
+      max-width: 600px; /* Limita la larghezza massima */
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Aggiunge un'ombra leggera */
+      margin-left: auto;
+      margin-right: auto; /* Centra la sezione */
+    }
+
+    /* Animazione per la comparsa */
+    .about-me.show {
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    /* Definire l'animazione di comparsa */
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
   </style>
 </head>
 <body>
   <canvas id="matrixCanvas" class="matrix"></canvas>
 
   <nav>
-    <a href="#">Home</a>
-    <a href="#about">About Me</a>
+    <a href="#" id="homeLink">Home</a>
+    <a href="#" id="aboutLink">About Me</a>
     <a href="#skills">Skills</a>
     <a href="#projects">Projects</a>
     <a href="#blog">Blog</a>
@@ -68,6 +99,42 @@
     <h1>Giuseppe Adduce</h1>
     <p>Computer Engineer and Master's student in Cybersecurity.</p>
   </div>
+
+  <!-- Sezione About Me, nascosta per default -->
+  <div id="aboutMe" class="about-me">
+    <h2>About Me</h2>
+    <p>
+      Graduate in Computer Engineering, currently pursuing a Master’s degree in Cybersecurity. Passionate about technology and security, I have built strong skills in designing and developing computer systems during my bachelor's studies. My current education aims to further specialize in protecting digital assets and managing cyber risks. With hands-on experience and a proactive approach, I am ready to take on challenging opportunities in the world of cybersecurity. I am seeking roles where I can contribute to innovative projects and continue growing professionally.
+    </p>
+  </div>
+
+  <script>
+    const aboutLink = document.getElementById("aboutLink");
+    const aboutMeSection = document.getElementById("aboutMe");
+    const homeLink = document.getElementById("homeLink");
+
+    // Funzione per mostrare la sezione About Me
+    aboutLink.addEventListener("click", function(event) {
+      event.preventDefault(); // Impedisce il comportamento predefinito del link (navigazione)
+
+      // Aggiungi la classe "show" per attivare l'animazione di comparsa
+      aboutMeSection.classList.add("show");
+
+      // Mostra la sezione About Me
+      aboutMeSection.style.display = "block";
+    });
+
+    // Funzione per nascondere la sezione About Me quando si clicca su "Home"
+    homeLink.addEventListener("click", function(event) {
+      event.preventDefault(); // Impedisce il comportamento predefinito del link (navigazione)
+
+      // Rimuove la classe "show" e nasconde la sezione About Me
+      aboutMeSection.classList.remove("show");
+
+      // Nasconde la sezione About Me
+      aboutMeSection.style.display = "none";
+    });
+  </script>
 
   <script>
     const canvas = document.getElementById("matrixCanvas");
