@@ -67,9 +67,10 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
       white-space: pre-wrap;
       font-family: 'Ubuntu Mono', monospace;
-      height: 300px;
+      height: 300px; /* Altezza predefinita */
       overflow-y: auto;
       position: relative;
+      transition: height 0.3s ease; /* Aggiunta transizione per l'altezza */
     }
 
     /* Barra superiore del terminale */
@@ -115,6 +116,42 @@
         opacity: 1;
       }
     }
+
+    /* Progetti - testo più piccolo e compatto */
+    .terminal-content {
+      font-size: 0.9em;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .project {
+      margin-bottom: 5px; /* Riduci la spaziatura tra i progetti */
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .project-description {
+      width: 85%;
+      text-align: left;
+    }
+
+    /* Icona GitHub */
+    .github-icon {
+      width: 20px;
+      height: 20px;
+      background-image: url('https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png');
+      background-size: cover;
+      cursor: pointer;
+    }
+
+    /*Colore project nome*/
+    .project-name {
+      color: red;
+    }
+
   </style>
 </head>
 <body>
@@ -123,8 +160,8 @@
   <nav>
     <a href="#" id="homeLink">Home</a>
     <a href="#" id="aboutLink">About Me</a>
+    <a href="#" id="projectsLink">Projects</a>
     <a href="#skills">Skills</a>
-    <a href="#projects">Projects</a>
     <a href="#blog">Blog</a>
   </nav>
 
@@ -133,7 +170,7 @@
     <p>Computer Engineer and Master's student in Cybersecurity.</p>
   </div>
 
-  <!-- Sezione terminale -->
+  <!-- Sezione terminale About Me -->
   <div id="terminal" class="terminal">
     <div class="terminal-header">
       <span>cmd.zkk</span>
@@ -142,25 +179,67 @@
     <p id="terminalContent"></p>
   </div>
 
+  <!-- Sezione terminale Projects -->
+  <div id="projectsTerminal" class="terminal">
+    <div class="terminal-header">
+      <span>cmd.zkk</span>
+      <div class="close" id="closeProjects"></div>
+    </div>
+    <div class="terminal-content">
+      <!-- Progetto Classify -->
+      <div class="project">
+        <div class="project-description">
+          <p><strong class="project-name">Classify:</strong> Classify is a mobile application designed to enhance the university experience. Leveraging cutting-edge technologies, it simplifies campus navigation and promotes academic engagement. Whether you're searching for classrooms, checking course schedules, or looking for faculty office hours, Classify is your ultimate campus guide.</p>
+        </div>
+        <div class="github-icon" onclick="window.open('https://github.com/sdv0001/Classify', '_blank')"></div>
+      </div>
+      <!-- Progetto Poker-Cards-Recognition -->
+      <div class="project">
+        <div class="project-description">
+          <p><strong class="project-name">Poker-Cards-Recognition:</strong> This project implements a card recognition system using algorithms and image processing techniques. The system processes images of playing cards to identify their values and suits.</p>
+        </div>
+        <div class="github-icon" onclick="window.open('https://github.com/zakkk97/Poker-Cards-Recognition', '_blank')"></div>
+      </div>
+      <!-- Progetto MarkerMerge -->
+      <div class="project">
+        <div class="project-description">
+          <p><strong class="project-name">MarkerMerge:</strong> This project processes a video to detect ArUco markers and uses them as reference points to project a custom image onto a defined region (e.g., a monitor screen). The output is a video where the image is seamlessly integrated into the screen, maintaining the correct perspective.</p>
+        </div>
+        <div class="github-icon" onclick="window.open('https://github.com/zakkk97/MarkerMerge', '_blank')"></div>
+      </div>
+      <!-- Progetto Decentralized Voting System -->
+      <div class="project">
+        <div class="project-description">
+          <p><strong class="project-name">Decentralized Voting System on Ethereum Blockchain:</strong> Decentralized application for the management of secure and transparent electronic voting, based on the Ethereum blockchain. It leverages technologies such as React, Solidity, Truffle, Ganache, MetaMask, and Web3.js to ensure data integrity, user authentication, and result immutability through smart contracts.</p>
+        </div>
+        <div class="github-icon" onclick="window.open('https://github.com/zakkk97/Progetto-Sicurezza-', '_blank')"></div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const aboutLink = document.getElementById("aboutLink");
+    const projectsLink = document.getElementById("projectsLink");
     const homeLink = document.getElementById("homeLink");
     const terminalSection = document.getElementById("terminal");
     const terminalContent = document.getElementById("terminalContent");
     const closeTerminalButton = document.getElementById("closeTerminal");
+    const projectsTerminalSection = document.getElementById("projectsTerminal");
+    const closeProjectsButton = document.getElementById("closeProjects");
 
-    // Funzione per mostrare solo il terminale quando si clicca su About Me
+    // Funzione per mostrare il terminale About Me
     aboutLink.addEventListener("click", function(event) {
       event.preventDefault(); // Impedisce il comportamento predefinito del link (navigazione)
 
       // Rimuove la sezione About Me
       terminalSection.style.display = "block"; // Mostra il terminale
+      projectsTerminalSection.style.display = "none"; // Nasconde la sezione Projects
 
       // Inizializza il contenuto del terminale e lo scrive continuativamente
       writeTerminalContent();
     });
 
-    // Funzione per scrivere il contenuto in modo continuo
+    // Funzione per scrivere il contenuto in modo continuo per About Me
     function writeTerminalContent() {
       const content = [
         "Loading About Me...",
@@ -186,14 +265,42 @@
     homeLink.addEventListener("click", function(event) {
       event.preventDefault(); // Impedisce il comportamento predefinito del link (navigazione)
 
-      // Rimuove il terminale e non ripristina nulla
+      // Nasconde il terminale
       terminalSection.style.display = "none"; // Nasconde il terminale
+      projectsTerminalSection.style.display = "none"; // Nasconde la sezione Projects
     });
 
     // Funzione per chiudere il terminale
     closeTerminalButton.addEventListener("click", function() {
       terminalSection.style.display = "none"; // Nasconde il terminale quando si clicca su "X"
     });
+
+    // Funzione per mostrare la sezione Projects
+    projectsLink.addEventListener("click", function(event) {
+      event.preventDefault(); // Impedisce il comportamento predefinito del link (navigazione)
+
+      // Rimuove la sezione About Me
+      terminalSection.style.display = "none"; // Nasconde il terminale
+      projectsTerminalSection.style.display = "block"; // Mostra il terminale Projects
+
+      // Aggiusta l'altezza dinamicamente
+      adjustTerminalHeight();
+    });
+
+    // Funzione per chiudere il terminale dei progetti
+    closeProjectsButton.addEventListener("click", function() {
+      projectsTerminalSection.style.display = "none"; // Nasconde il terminale dei progetti quando si clicca su "X"
+    });
+
+    // Funzione per calcolare l'altezza del terminale in base al numero di progetti
+    function adjustTerminalHeight() {
+      const projectCount = document.querySelectorAll('.project').length; // Conta il numero di progetti
+      const projectHeight = 80; // Altezza approssimativa per ogni progetto (puoi adattarla se necessario)
+      const terminalHeight = projectCount * projectHeight; // Calcola l'altezza totale del terminale
+
+      // Imposta l'altezza del terminale
+      projectsTerminalSection.style.height = `${terminalHeight + 40}px`; // 40px per il padding e l'intestazione
+    }
   </script>
 
   <script>
