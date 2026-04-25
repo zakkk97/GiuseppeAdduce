@@ -3,81 +3,167 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Giuseppe Adduce</title>
+  <meta name="description" content="Portfolio personale di Giuseppe Adduce, Cybersecurity Consultant, Computer Engineer e Master's student in Cybersecurity." />
+  <title>Giuseppe Adduce | Cybersecurity Portfolio</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap" rel="stylesheet">
+
   <style>
+    :root {
+      --bg: #000;
+      --text: #fff;
+      --green: #00ff00;
+      --green-soft: limegreen;
+      --red: #ff3333;
+      --terminal-bg: rgba(0, 0, 0, 0.92);
+      --terminal-border: rgba(0, 255, 0, 0.35);
+      --terminal-header: #333;
+      --muted: #b7b7b7;
+      --bar-bg: rgba(255, 255, 255, 0.08);
+      --cyan: #00e5ff;
+      --yellow: #ffe066;
+      --orange: #ff9f1c;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
-      background-color: black;
-      color: white;
+      background-color: var(--bg);
+      color: var(--text);
       font-family: 'Ubuntu Mono', Consolas, 'Courier New', monospace;
       overflow: hidden;
     }
 
     .matrix {
       position: fixed;
+      inset: 0;
       width: 100%;
       height: 100%;
-      z-index: -1;
+      z-index: -2;
       filter: blur(3px);
+    }
+
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.035) 0px,
+        rgba(255, 255, 255, 0.035) 1px,
+        transparent 2px,
+        transparent 5px
+      );
+      opacity: 0.18;
     }
 
     canvas {
       display: block;
     }
 
-    .content {
-      text-align: center;
-      padding-top: 20vh;
-    }
-
-    h1 {
-      color: limegreen;
-      font-size: 2em;
-    }
-
-    p {
-      color: white;
-      font-size: 1em;
-    }
-
     nav {
       text-align: center;
       padding: 20px;
+      position: relative;
+      z-index: 5;
     }
 
     nav a {
-      color: limegreen;
+      color: var(--green-soft);
       margin: 0 15px;
       text-decoration: none;
       font-weight: bold;
+      transition: color 0.25s ease, text-shadow 0.25s ease;
     }
 
-    /* Terminale */
+    nav a:hover,
+    nav a.active {
+      color: var(--green);
+      text-shadow: 0 0 10px var(--green);
+    }
+
+    .content {
+      text-align: center;
+      padding-top: 18vh;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    .content.hidden {
+      opacity: 0.22;
+      transform: scale(0.98);
+    }
+
+    h1 {
+      color: var(--green-soft);
+      font-size: clamp(2em, 5vw, 4em);
+      margin: 0 0 10px;
+      text-shadow: 0 0 12px rgba(0, 255, 0, 0.65);
+      animation: glitchPulse 4s infinite linear;
+    }
+
+    .subtitle {
+      color: white;
+      font-size: clamp(1em, 2vw, 1.25em);
+      margin: 0 auto;
+      max-width: 900px;
+      padding: 0 20px;
+      line-height: 1.5;
+    }
+
+    .status-line {
+      color: var(--green);
+      margin-top: 18px;
+      font-size: 0.95em;
+      opacity: 0.92;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 9px;
+      height: 1em;
+      background: var(--green);
+      margin-left: 4px;
+      transform: translateY(2px);
+      animation: blink 1s infinite;
+    }
+
     .terminal {
       display: none;
-      background-color: black;
-      color: #00ff00;
-      width: 80%;
-      max-width: 800px;
+      background-color: var(--terminal-bg);
+      color: var(--green);
+      width: min(88%, 980px);
       margin: 20px auto;
-      padding: 20px;
       border-radius: 10px;
-      font-size: 1.2em;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      font-size: 1.08em;
+      box-shadow: 0 4px 22px rgba(0, 255, 0, 0.14), 0 4px 10px rgba(0, 0, 0, 0.55);
       white-space: pre-wrap;
       font-family: 'Ubuntu Mono', monospace;
-      height: 300px; /* Altezza predefinita */
+      max-height: 68vh;
       overflow-y: auto;
       position: relative;
-      transition: height 0.3s ease; /* Aggiunta transizione per l'altezza */
+      border: 1px solid var(--terminal-border);
+      backdrop-filter: blur(2px);
     }
 
-    /* Barra superiore del terminale */
+    .terminal.show {
+      display: block;
+      animation: fadeIn 0.55s ease-in-out;
+    }
+
     .terminal-header {
-      background-color: #333;
+      background-color: var(--terminal-header);
       color: white;
-      padding: 5px 10px;
+      padding: 7px 12px;
       text-align: left;
       font-size: 1em;
       border-top-left-radius: 10px;
@@ -85,242 +171,696 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      border-bottom: 1px solid rgba(0, 255, 0, 0.18);
     }
 
-    /* Testo cmd.zkk a sinistra */
     .terminal-header span {
       font-size: 0.9em;
-      color: #00ff00;
+      color: var(--green);
     }
 
-    /* Pulsante di chiusura (X) */
-    .terminal-header .close {
-      width: 15px;
-      height: 15px;
+    .terminal-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
-      background-color: #ff5c5c;
-      cursor: pointer;
+      display: inline-block;
+      opacity: 0.95;
     }
 
-    /* Animazione per la comparsa */
-    .terminal.show {
-      animation: fadeIn 1s ease-in-out;
+    .dot.yellow { background: #ffbd44; }
+    .dot.green { background: #00ca4e; }
+    .dot.close { background: #ff5c5c; cursor: pointer; }
+
+    .terminal-body {
+      padding: 20px;
     }
 
-    /* Definire l'animazione di comparsa */
-    @keyframes fadeIn {
-      0% {
-        opacity: 0;
-      }
-      100% {
-        opacity: 1;
-      }
+    #terminalContent {
+      margin: 0;
+      line-height: 1.5;
     }
 
-    /* Progetti - testo più piccolo e compatto */
     .terminal-content {
       font-size: 0.9em;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+      gap: 8px;
     }
 
     .project {
-      margin-bottom: 5px; /* Riduci la spaziatura tra i progetti */
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: 1fr 28px;
+      gap: 14px;
       align-items: center;
       width: 100%;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(0, 255, 0, 0.12);
+    }
+
+    .project:last-child {
+      border-bottom: none;
     }
 
     .project-description {
-      width: 85%;
+      width: 100%;
       text-align: left;
+      line-height: 1.35;
     }
 
-    /* Icona GitHub */
+    .project-description p {
+      margin: 0;
+    }
+
     .github-icon {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       background-image: url('https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png');
       background-size: cover;
+      background-position: center;
       cursor: pointer;
+      filter: invert(1) drop-shadow(0 0 5px rgba(0, 255, 0, 0.35));
+      transition: transform 0.2s ease, filter 0.2s ease;
     }
 
-    /*Colore project nome*/
+    .github-icon:hover {
+      transform: scale(1.14);
+      filter: invert(1) drop-shadow(0 0 10px rgba(0, 255, 0, 0.8));
+    }
+
     .project-name {
-      color: red;
+      color: var(--red);
     }
 
+    .prompt-line {
+      color: var(--green);
+      margin-bottom: 14px;
+      opacity: 0.95;
+    }
+
+    .prompt-path {
+      color: var(--cyan);
+    }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      white-space: normal;
+    }
+
+    .skill-card {
+      border: 1px solid rgba(0, 255, 0, 0.18);
+      border-radius: 10px;
+      padding: 14px;
+      background: rgba(0, 0, 0, 0.48);
+      box-shadow: inset 0 0 14px rgba(0, 255, 0, 0.035);
+    }
+
+    .skill-card h3 {
+      color: var(--red);
+      margin: 0 0 12px;
+      font-size: 1.05em;
+    }
+
+    .skill-row {
+      margin-bottom: 13px;
+    }
+
+    .skill-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .skill-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 5px;
+      color: var(--text);
+      font-size: 0.92em;
+    }
+
+    .skill-label {
+      color: var(--green);
+    }
+
+    .skill-value {
+      color: var(--muted);
+      text-align: right;
+    }
+
+    .skill-bar {
+      height: 13px;
+      background: var(--bar-bg);
+      border: 1px solid rgba(0, 255, 0, 0.24);
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .skill-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(0, 255, 0, 0.35), rgba(0, 255, 0, 0.95));
+      box-shadow: 0 0 12px rgba(0, 255, 0, 0.6);
+      transition: width 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    .skill-fill::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.36), transparent);
+      transform: translateX(-100%);
+      animation: loadingSweep 1.5s infinite;
+    }
+
+    .level-scale {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 5px;
+      margin-top: 8px;
+      font-size: 0.78em;
+      color: var(--muted);
+    }
+
+    .level-scale span {
+      text-align: center;
+      padding: 3px 0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .level-scale span.active-level {
+      color: #000;
+      background: var(--green);
+      border-color: var(--green);
+      box-shadow: 0 0 9px rgba(0, 255, 0, 0.8);
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 9px;
+    }
+
+    .tag {
+      color: var(--text);
+      border: 1px solid rgba(0, 255, 0, 0.22);
+      border-radius: 999px;
+      padding: 4px 8px;
+      background: rgba(0, 255, 0, 0.06);
+      font-size: 0.82em;
+    }
+
+    .blog-placeholder {
+      color: var(--text);
+      line-height: 1.5;
+      white-space: normal;
+    }
+
+    .blog-placeholder strong {
+      color: var(--red);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes blink {
+      0%, 48% { opacity: 1; }
+      49%, 100% { opacity: 0; }
+    }
+
+    @keyframes glitchPulse {
+      0%, 96%, 100% { transform: translate(0); }
+      97% { transform: translate(1px, -1px); }
+      98% { transform: translate(-1px, 1px); }
+      99% { transform: translate(1px, 1px); }
+    }
+
+    @keyframes loadingSweep {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    @media (max-width: 800px) {
+      body {
+        overflow-y: auto;
+      }
+
+      nav {
+        padding: 16px 10px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px 16px;
+      }
+
+      nav a {
+        margin: 0;
+      }
+
+      .content {
+        padding-top: 12vh;
+      }
+
+      .terminal {
+        width: 94%;
+        max-height: none;
+        margin-bottom: 28px;
+      }
+
+      .skills-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .project {
+        grid-template-columns: 1fr;
+      }
+
+      .github-icon {
+        justify-self: end;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
+
+      .skill-fill {
+        transition: none;
+      }
+    }
   </style>
 </head>
 <body>
-  <canvas id="matrixCanvas" class="matrix"></canvas>
+  <canvas id="matrixCanvas" class="matrix" aria-hidden="true"></canvas>
+  <div class="scanlines" aria-hidden="true"></div>
 
-  <nav>
-    <a href="#" id="homeLink">Home</a>
+  <nav aria-label="Main navigation">
+    <a href="#" id="homeLink" class="active">Home</a>
     <a href="#" id="aboutLink">About Me</a>
     <a href="#" id="projectsLink">Projects</a>
-    <a href="#skills">Skills</a>
-    <a href="#blog">Blog</a>
+    <a href="#" id="skillsLink">Skills</a>
+    <a href="#" id="blogLink">Blog</a>
   </nav>
 
-  <div class="content">
-    <h1>Giuseppe Adduce</h1>
-    <p>Computer Engineer and Master's student in Cybersecurity.</p>
-  </div>
+  <main>
+    <section class="content" id="homeContent">
+      <h1>Giuseppe Adduce</h1>
+      <p class="subtitle">Computer Engineer, Master's student in Cybersecurity and Cybersecurity Consultant @ BIP.</p>
+      <p class="status-line">system.status = online<span class="cursor"></span></p>
+    </section>
 
-  <!-- Sezione terminale About Me -->
-  <div id="terminal" class="terminal">
-    <div class="terminal-header">
-      <span>cmd.zkk</span>
-      <div class="close" id="closeTerminal"></div>
-    </div>
-    <p id="terminalContent"></p>
-  </div>
+    <section id="aboutTerminal" class="terminal" aria-label="About Me terminal">
+      <div class="terminal-header">
+        <span>cmd.zkk — about.exe</span>
+        <div class="terminal-controls" aria-label="Terminal controls">
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="dot close" data-close="aboutTerminal" title="Close terminal"></span>
+        </div>
+      </div>
+      <div class="terminal-body">
+        <p id="terminalContent"></p>
+      </div>
+    </section>
 
-  <!-- Sezione terminale Projects -->
-  <div id="projectsTerminal" class="terminal">
-    <div class="terminal-header">
-      <span>cmd.zkk</span>
-      <div class="close" id="closeProjects"></div>
-    </div>
-    <div class="terminal-content">
-      <!-- Progetto Classify -->
-      <div class="project">
-        <div class="project-description">
-          <p><strong class="project-name">Classify:</strong> Classify is a mobile application designed to enhance the university experience. Leveraging cutting-edge technologies, it simplifies campus navigation and promotes academic engagement. Whether you're searching for classrooms, checking course schedules, or looking for faculty office hours, Classify is your ultimate campus guide.</p>
+    <section id="projectsTerminal" class="terminal" aria-label="Projects terminal">
+      <div class="terminal-header">
+        <span>cmd.zkk — projects.sh</span>
+        <div class="terminal-controls" aria-label="Terminal controls">
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="dot close" data-close="projectsTerminal" title="Close terminal"></span>
         </div>
-        <div class="github-icon" onclick="window.open('https://github.com/sdv0001/Classify', '_blank')"></div>
       </div>
-      <!-- Progetto Poker-Cards-Recognition -->
-      <div class="project">
-        <div class="project-description">
-          <p><strong class="project-name">Poker-Cards-Recognition:</strong> This project implements a card recognition system using algorithms and image processing techniques. The system processes images of playing cards to identify their values and suits.</p>
+      <div class="terminal-body">
+        <div class="prompt-line">root@portfolio:<span class="prompt-path">~/projects</span>$ ls -la --github</div>
+        <div class="terminal-content">
+          <div class="project">
+            <div class="project-description">
+              <p><strong class="project-name">Classify:</strong> Mobile application designed to enhance the university experience. It simplifies campus navigation and promotes academic engagement by helping students find classrooms, schedules and faculty office hours.</p>
+            </div>
+            <div class="github-icon" role="button" tabindex="0" aria-label="Open Classify on GitHub" data-url="https://github.com/sdv0001/Classify"></div>
+          </div>
+
+          <div class="project">
+            <div class="project-description">
+              <p><strong class="project-name">Poker-Cards-Recognition:</strong> Card recognition system based on image processing techniques. It processes playing card images to identify values and suits.</p>
+            </div>
+            <div class="github-icon" role="button" tabindex="0" aria-label="Open Poker-Cards-Recognition on GitHub" data-url="https://github.com/zakkk97/Poker-Cards-Recognition"></div>
+          </div>
+
+          <div class="project">
+            <div class="project-description">
+              <p><strong class="project-name">MarkerMerge:</strong> Video processing project that detects ArUco markers and uses them as reference points to project a custom image onto a defined region while preserving perspective.</p>
+            </div>
+            <div class="github-icon" role="button" tabindex="0" aria-label="Open MarkerMerge on GitHub" data-url="https://github.com/zakkk97/MarkerMerge"></div>
+          </div>
+
+          <div class="project">
+            <div class="project-description">
+              <p><strong class="project-name">Decentralized Voting System on Ethereum Blockchain:</strong> Decentralized application for secure and transparent electronic voting. Built with React, Solidity, Truffle, Ganache, MetaMask and Web3.js to support integrity, authentication and immutability.</p>
+            </div>
+            <div class="github-icon" role="button" tabindex="0" aria-label="Open Decentralized Voting System on GitHub" data-url="https://github.com/zakkk97/Progetto-Sicurezza-"></div>
+          </div>
         </div>
-        <div class="github-icon" onclick="window.open('https://github.com/zakkk97/Poker-Cards-Recognition', '_blank')"></div>
       </div>
-      <!-- Progetto MarkerMerge -->
-      <div class="project">
-        <div class="project-description">
-          <p><strong class="project-name">MarkerMerge:</strong> This project processes a video to detect ArUco markers and uses them as reference points to project a custom image onto a defined region (e.g., a monitor screen). The output is a video where the image is seamlessly integrated into the screen, maintaining the correct perspective.</p>
+    </section>
+
+    <section id="skillsTerminal" class="terminal" aria-label="Skills terminal">
+      <div class="terminal-header">
+        <span>cmd.zkk — skills.dat</span>
+        <div class="terminal-controls" aria-label="Terminal controls">
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="dot close" data-close="skillsTerminal" title="Close terminal"></span>
         </div>
-        <div class="github-icon" onclick="window.open('https://github.com/zakkk97/MarkerMerge', '_blank')"></div>
       </div>
-      <!-- Progetto Decentralized Voting System -->
-      <div class="project">
-        <div class="project-description">
-          <p><strong class="project-name">Decentralized Voting System on Ethereum Blockchain:</strong> Decentralized application for the management of secure and transparent electronic voting, based on the Ethereum blockchain. It leverages technologies such as React, Solidity, Truffle, Ganache, MetaMask, and Web3.js to ensure data integrity, user authentication, and result immutability through smart contracts.</p>
+      <div class="terminal-body">
+        <div class="prompt-line">root@portfolio:<span class="prompt-path">~/skills</span>$ ./load_profile --animated</div>
+
+        <div class="skills-grid">
+          <div class="skill-card">
+            <h3>Cybersecurity / Pentesting</h3>
+            <div class="skill-row">
+              <div class="skill-meta"><span class="skill-label">Penetration Testing</span><span class="skill-value">Very Good</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-level="86"></div></div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-meta"><span class="skill-label">Vulnerability Assessment</span><span class="skill-value">Very Good</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-level="84"></div></div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-meta"><span class="skill-label">Web Security / OWASP</span><span class="skill-value">Good+</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-level="80"></div></div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-meta"><span class="skill-label">Linux & Security Tools</span><span class="skill-value">Good+</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-level="78"></div></div>
+            </div>
+            <div class="tag-list">
+              <span class="tag">Kali Linux</span>
+              <span class="tag">Burp Suite</span>
+              <span class="tag">Nmap</span>
+              <span class="tag">Metasploit</span>
+              <span class="tag">Wireshark</span>
+            </div>
+          </div>
+
+          <div class="skill-card">
+            <h3>Governance, Risk & Compliance</h3>
+            <div class="skill-row">
+              <div class="skill-meta"><span class="skill-label">Cybersecurity Governance</span><span class="skill-value">High</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-level="88"></div></div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-meta"><span class="skill-label">Risk Management</span><span class="skill-value">High</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-level="86"></div></div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-meta"><span class="skill-label">Compliance & Controls</span><span class="skill-value">High</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-level="84"></div></div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-meta"><span class="skill-label">Security Documentation</span><span class="skill-value">High</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-level="82"></div></div>
+            </div>
+            <div class="tag-list">
+              <span class="tag">GRC</span>
+              <span class="tag">Policy</span>
+              <span class="tag">Audit Support</span>
+              <span class="tag">Security Controls</span>
+            </div>
+          </div>
+
+          <div class="skill-card">
+            <h3>Programming Languages</h3>
+            <div class="skill-row">
+              <div class="skill-meta"><span class="skill-label">Python</span><span class="skill-value">Medium</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-level="62"></div></div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-meta"><span class="skill-label">Java</span><span class="skill-value">Medium</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-level="58"></div></div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-meta"><span class="skill-label">C</span><span class="skill-value">Medium</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-level="56"></div></div>
+            </div>
+            <div class="tag-list">
+              <span class="tag">Scripting</span>
+              <span class="tag">OOP</span>
+              <span class="tag">Algorithms</span>
+              <span class="tag">Secure Coding</span>
+            </div>
+          </div>
+
+          <div class="skill-card">
+            <h3>Office & Business Tools</h3>
+            <div class="skill-row">
+              <div class="skill-meta"><span class="skill-label">Microsoft Office Suite</span><span class="skill-value">High</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-level="84"></div></div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-meta"><span class="skill-label">Excel / Reporting</span><span class="skill-value">Good+</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-level="76"></div></div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-meta"><span class="skill-label">PowerPoint / Documentation</span><span class="skill-value">High</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-level="82"></div></div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-meta"><span class="skill-label">Collaboration Tools</span><span class="skill-value">Good+</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-level="78"></div></div>
+            </div>
+            <div class="tag-list">
+              <span class="tag">Word</span>
+              <span class="tag">Excel</span>
+              <span class="tag">PowerPoint</span>
+              <span class="tag">Teams</span>
+              <span class="tag">SharePoint</span>
+            </div>
+          </div>
+
+          <div class="skill-card">
+            <h3>English Level</h3>
+            <div class="skill-row">
+              <div class="skill-meta"><span class="skill-label">English Proficiency</span><span class="skill-value">B1</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-level="50"></div></div>
+              <div class="level-scale" aria-label="English level scale from A1 to C2">
+                <span>A1</span>
+                <span>A2</span>
+                <span class="active-level">B1</span>
+                <span>B2</span>
+                <span>C1</span>
+                <span>C2</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="skill-card">
+            <h3>Current Role</h3>
+            <div class="skill-row">
+              <div class="skill-meta"><span class="skill-label">Cybersecurity Consultant @ BIP</span><span class="skill-value">Active</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-level="90"></div></div>
+            </div>
+            <p style="color: white; line-height: 1.45; margin: 10px 0 0;">Currently working at BIP as a Cybersecurity Consultant, focusing on security-related activities, governance, compliance, documentation and support for cybersecurity initiatives.</p>
+          </div>
         </div>
-        <div class="github-icon" onclick="window.open('https://github.com/zakkk97/Progetto-Sicurezza-', '_blank')"></div>
       </div>
-    </div>
-  </div>
+    </section>
+
+    <section id="blogTerminal" class="terminal" aria-label="Blog terminal">
+      <div class="terminal-header">
+        <span>cmd.zkk — blog.log</span>
+        <div class="terminal-controls" aria-label="Terminal controls">
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="dot close" data-close="blogTerminal" title="Close terminal"></span>
+        </div>
+      </div>
+      <div class="terminal-body blog-placeholder">
+        <div class="prompt-line">root@portfolio:<span class="prompt-path">~/blog</span>$ cat roadmap.txt</div>
+        <p><strong>Blog section loading...</strong></p>
+        <p>Future area dedicated to cybersecurity notes, project write-ups, penetration testing labs, governance insights and technical experiments.</p>
+      </div>
+    </section>
+  </main>
 
   <script>
-    const aboutLink = document.getElementById("aboutLink");
-    const projectsLink = document.getElementById("projectsLink");
-    const homeLink = document.getElementById("homeLink");
-    const terminalSection = document.getElementById("terminal");
-    const terminalContent = document.getElementById("terminalContent");
-    const closeTerminalButton = document.getElementById("closeTerminal");
-    const projectsTerminalSection = document.getElementById("projectsTerminal");
-    const closeProjectsButton = document.getElementById("closeProjects");
+    const terminals = {
+      about: document.getElementById('aboutTerminal'),
+      projects: document.getElementById('projectsTerminal'),
+      skills: document.getElementById('skillsTerminal'),
+      blog: document.getElementById('blogTerminal')
+    };
 
-    // Funzione per mostrare il terminale About Me
-    aboutLink.addEventListener("click", function(event) {
-      event.preventDefault(); // Impedisce il comportamento predefinito del link (navigazione)
+    const links = {
+      home: document.getElementById('homeLink'),
+      about: document.getElementById('aboutLink'),
+      projects: document.getElementById('projectsLink'),
+      skills: document.getElementById('skillsLink'),
+      blog: document.getElementById('blogLink')
+    };
 
-      // Rimuove la sezione About Me
-      terminalSection.style.display = "block"; // Mostra il terminale
-      projectsTerminalSection.style.display = "none"; // Nasconde la sezione Projects
+    const homeContent = document.getElementById('homeContent');
+    const terminalContent = document.getElementById('terminalContent');
 
-      // Inizializza il contenuto del terminale e lo scrive continuativamente
-      writeTerminalContent();
+    let aboutAlreadyTyped = false;
+
+    function setActiveLink(section) {
+      Object.values(links).forEach(link => link.classList.remove('active'));
+      if (links[section]) links[section].classList.add('active');
+    }
+
+    function hideAllTerminals() {
+      Object.values(terminals).forEach(terminal => terminal.classList.remove('show'));
+    }
+
+    function showTerminal(section) {
+      hideAllTerminals();
+      terminals[section].classList.add('show');
+      homeContent.classList.add('hidden');
+      setActiveLink(section);
+
+      if (section === 'about') writeTerminalContent();
+      if (section === 'skills') animateSkills();
+    }
+
+    function showHome() {
+      hideAllTerminals();
+      homeContent.classList.remove('hidden');
+      setActiveLink('home');
+    }
+
+    links.home.addEventListener('click', event => {
+      event.preventDefault();
+      showHome();
     });
 
-    // Funzione per scrivere il contenuto in modo continuo per About Me
+    links.about.addEventListener('click', event => {
+      event.preventDefault();
+      showTerminal('about');
+    });
+
+    links.projects.addEventListener('click', event => {
+      event.preventDefault();
+      showTerminal('projects');
+    });
+
+    links.skills.addEventListener('click', event => {
+      event.preventDefault();
+      showTerminal('skills');
+    });
+
+    links.blog.addEventListener('click', event => {
+      event.preventDefault();
+      showTerminal('blog');
+    });
+
+    document.querySelectorAll('[data-close]').forEach(button => {
+      button.addEventListener('click', () => {
+        document.getElementById(button.dataset.close).classList.remove('show');
+        homeContent.classList.remove('hidden');
+        setActiveLink('home');
+      });
+    });
+
+    document.querySelectorAll('.github-icon').forEach(icon => {
+      const openRepo = () => window.open(icon.dataset.url, '_blank', 'noopener,noreferrer');
+      icon.addEventListener('click', openRepo);
+      icon.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openRepo();
+        }
+      });
+    });
+
     function writeTerminalContent() {
       const content = [
-        "Loading About Me...",
-        "",
-        "Graduate in Computer Engineering, currently pursuing a Master’s degree in Cybersecurity. Passionate about technology and security, I have built strong skills in designing and developing computer systems during my bachelor's studies. My current education aims to further specialize in protecting digital assets and managing cyber risks. With hands-on experience and a proactive approach, I am ready to take on challenging opportunities in the world of cybersecurity. I am seeking roles where I can contribute to innovative projects and continue growing professionally."
+        'Loading About Me...',
+        '',
+        'Graduate in Computer Engineering, currently pursuing a Master’s degree in Cybersecurity.',
+        'Currently working at BIP as a Cybersecurity Consultant.',
+        '',
+        'Passionate about technology, security and cyber risk management, I have built strong skills in designing and developing computer systems during my bachelor studies.',
+        'My current academic and professional path is focused on protecting digital assets, supporting cybersecurity governance, strengthening compliance activities and developing technical security capabilities.',
+        '',
+        'With hands-on experience, a proactive mindset and a strong interest in both offensive security and governance, I am ready to contribute to innovative cybersecurity projects and continue growing professionally.'
       ];
 
-      let index = 0;
-      let line = 0;
+      if (aboutAlreadyTyped) return;
+      aboutAlreadyTyped = true;
+      terminalContent.textContent = '';
 
+      let line = 0;
       function typeLine() {
-        if (line < content.length) {
-          terminalContent.textContent += content[line] + "\n";
+        if (line < content.length && terminals.about.classList.contains('show')) {
+          terminalContent.textContent += content[line] + '\n';
           line++;
-          setTimeout(typeLine, 1000); // Aggiunge una nuova riga ogni 1 secondo
+          setTimeout(typeLine, line === 1 ? 450 : 250);
         }
       }
-
       typeLine();
     }
 
-    // Funzione per nascondere il terminale e non ripristinare la sezione About Me (che è stata eliminata)
-    homeLink.addEventListener("click", function(event) {
-      event.preventDefault(); // Impedisce il comportamento predefinito del link (navigazione)
-
-      // Nasconde il terminale
-      terminalSection.style.display = "none"; // Nasconde il terminale
-      projectsTerminalSection.style.display = "none"; // Nasconde la sezione Projects
-    });
-
-    // Funzione per chiudere il terminale
-    closeTerminalButton.addEventListener("click", function() {
-      terminalSection.style.display = "none"; // Nasconde il terminale quando si clicca su "X"
-    });
-
-    // Funzione per mostrare la sezione Projects
-    projectsLink.addEventListener("click", function(event) {
-      event.preventDefault(); // Impedisce il comportamento predefinito del link (navigazione)
-
-      // Rimuove la sezione About Me
-      terminalSection.style.display = "none"; // Nasconde il terminale
-      projectsTerminalSection.style.display = "block"; // Mostra il terminale Projects
-
-      // Aggiusta l'altezza dinamicamente
-      adjustTerminalHeight();
-    });
-
-    // Funzione per chiudere il terminale dei progetti
-    closeProjectsButton.addEventListener("click", function() {
-      projectsTerminalSection.style.display = "none"; // Nasconde il terminale dei progetti quando si clicca su "X"
-    });
-
-    // Funzione per calcolare l'altezza del terminale in base al numero di progetti
-    function adjustTerminalHeight() {
-      const projectCount = document.querySelectorAll('.project').length; // Conta il numero di progetti
-      const projectHeight = 80; // Altezza approssimativa per ogni progetto (puoi adattarla se necessario)
-      const terminalHeight = projectCount * projectHeight; // Calcola l'altezza totale del terminale
-
-      // Imposta l'altezza del terminale
-      projectsTerminalSection.style.height = `${terminalHeight + 40}px`; // 40px per il padding e l'intestazione
+    function animateSkills() {
+      const fills = document.querySelectorAll('#skillsTerminal .skill-fill');
+      fills.forEach(fill => {
+        fill.style.width = '0%';
+        window.requestAnimationFrame(() => {
+          setTimeout(() => {
+            fill.style.width = `${fill.dataset.level}%`;
+          }, 120);
+        });
+      });
     }
   </script>
 
   <script>
-    const canvas = document.getElementById("matrixCanvas");
-    const ctx = canvas.getContext("2d");
+    const canvas = document.getElementById('matrixCanvas');
+    const ctx = canvas.getContext('2d');
 
-    canvas.height = window.innerHeight;
-    canvas.width = window.innerWidth;
-
-    const letters = "アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const letters = 'アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&<>/{}[]';
     const fontSize = 14;
-    const columns = canvas.width / fontSize;
-    const drops = new Array(Math.floor(columns)).fill(1);
+    let columns = 0;
+    let drops = [];
+
+    function resizeCanvas() {
+      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+      columns = Math.floor(canvas.width / fontSize);
+      drops = new Array(columns).fill(1);
+    }
 
     function drawMatrix() {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = "#00f";
-      ctx.font = fontSize + "px monospace";
+      ctx.fillStyle = '#003cff';
+      ctx.font = fontSize + 'px monospace';
 
       for (let i = 0; i < drops.length; i++) {
         const text = letters[Math.floor(Math.random() * letters.length)];
@@ -333,6 +873,8 @@
       }
     }
 
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
     setInterval(drawMatrix, 33);
   </script>
 </body>
